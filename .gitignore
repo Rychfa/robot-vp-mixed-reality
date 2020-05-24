@@ -1,0 +1,9 @@
+# Ignore builds if any
+**/Build
+**/Export
+*.apk
+
+# Ignore log files if any
+**/logs
+**/Logs
+*.log
