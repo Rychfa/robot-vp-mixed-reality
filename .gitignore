@@ -3,7 +3,6 @@
 **/Export
 *.apk
 
-# Ignore log files if any
-**/logs
-**/Logs
+# Ignore Temp
+**/Temp
 *.log
