@@ -4,6 +4,17 @@ ScriptsOnlyBuild:
     - ButtonsHandler
     - ExitManager
     - PlacementController
+    - RosSharp.HingeJointLimitsManager
+    - RosSharp.Urdf.UrdfCollision
+    - RosSharp.Urdf.UrdfCollisions
+    - RosSharp.Urdf.UrdfInertial
+    - RosSharp.Urdf.UrdfJointFixed
+    - RosSharp.Urdf.UrdfJointRevolute
+    - RosSharp.Urdf.UrdfLink
+    - RosSharp.Urdf.UrdfPlugins
+    - RosSharp.Urdf.UrdfRobot
+    - RosSharp.Urdf.UrdfVisual
+    - RosSharp.Urdf.UrdfVisuals
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.RiderScriptEditorData
     - Packages.Rider.Editor.UnitTesting.CallbackData
@@ -47,6 +58,10 @@ ScriptsOnlyBuild:
     - Class: 43
       Script: {instanceID: 0}
     - Class: 48
+      Script: {instanceID: 0}
+    - Class: 54
+      Script: {instanceID: 0}
+    - Class: 59
       Script: {instanceID: 0}
     - Class: 64
       Script: {instanceID: 0}
@@ -92,9 +107,33 @@ ScriptsOnlyBuild:
       Script: {instanceID: 13274}
     - Class: 114
       Script: {instanceID: 13378}
+    - Class: 114
+      Script: {instanceID: 14546}
+    - Class: 114
+      Script: {instanceID: 14552}
+    - Class: 114
+      Script: {instanceID: 14570}
+    - Class: 114
+      Script: {instanceID: 14602}
+    - Class: 114
+      Script: {instanceID: 14622}
+    - Class: 114
+      Script: {instanceID: 14628}
+    - Class: 114
+      Script: {instanceID: 14646}
+    - Class: 114
+      Script: {instanceID: 14654}
+    - Class: 114
+      Script: {instanceID: 14680}
+    - Class: 114
+      Script: {instanceID: 14694}
+    - Class: 114
+      Script: {instanceID: 14718}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
+      Script: {instanceID: 0}
+    - Class: 138
       Script: {instanceID: 0}
     - Class: 157
       Script: {instanceID: 0}
@@ -739,6 +778,288 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
+  - hash:
+      serializedVersion: 2
+      Hash: 3a80da985e1a1dfd8bebd5a7f9b8da1a
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JointStatePatcher
+  - hash:
+      serializedVersion: 2
+      Hash: a25ad252d1d62127b0f5c6d17181f1c2
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: LaserScanVisualizerLines
+  - hash:
+      serializedVersion: 2
+      Hash: 5503f57feab25077a1e1b713b64d36fb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfJointPrismatic
+  - hash:
+      serializedVersion: 2
+      Hash: 229b8640d882292e90f94e00eeebe282
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp
+    className: HingeJointLimitsManager
+  - hash:
+      serializedVersion: 2
+      Hash: 145551d34f1a016369f6f322f3a4fb6d
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfCollision
+  - hash:
+      serializedVersion: 2
+      Hash: 8f2f1d30714d893174eb365f1e8fe726
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: GetParamServiceProvider
+  - hash:
+      serializedVersion: 2
+      Hash: 870bdfc9028a850b6e40ea17db08772b
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: LaserScanSubscriber
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: LaserScanWriter
+  - hash:
+      serializedVersion: 2
+      Hash: b300185396ca1e0231bd4f070140561c
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: PoseStampedPublisher
+  - hash:
+      serializedVersion: 2
+      Hash: 85e89b51b107daea862016231064d6c3
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfRobot
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JointStateReader
+  - hash:
+      serializedVersion: 2
+      Hash: 5c15f66853a446c1995b5508c9c7fa28
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfLink
+  - hash:
+      serializedVersion: 2
+      Hash: a25ad252d1d62127b0f5c6d17181f1c2
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: LaserScanVisualizerSpheres
+  - hash:
+      serializedVersion: 2
+      Hash: be54fe3c504eb4354238744417ca7c2d
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: TwistSubscriber
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfCollisions
+  - hash:
+      serializedVersion: 2
+      Hash: ac7ab2ea4c8b32e359b107a2eb0c8549
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: LaserScanPublisher
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfVisuals
+  - hash:
+      serializedVersion: 2
+      Hash: 4f07d984a781b6b2f93aab25595d68d7
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: OdometrySubscriber
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JointStateWriter
+  - hash:
+      serializedVersion: 2
+      Hash: dce761e73f3059c170256a3093bb0682
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JoyAxisJointTransformWriter
+  - hash:
+      serializedVersion: 2
+      Hash: 5503f57feab25077a1e1b713b64d36fb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfJointRevolute
+  - hash:
+      serializedVersion: 2
+      Hash: 67c6133c6af2443af40454cecd99aad6
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: ImageSubscriber
+  - hash:
+      serializedVersion: 2
+      Hash: 0083cb008925d54a6c989e91c154707d
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfPlugin
+  - hash:
+      serializedVersion: 2
+      Hash: cfdb76b0a25130bf60824bc7a7448285
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfVisual
+  - hash:
+      serializedVersion: 2
+      Hash: 2908deb51e3affdb0464f3f9b7bacb67
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient.Actionlib
+    className: UnityFibonacciActionClient
+  - hash:
+      serializedVersion: 2
+      Hash: cf9629c79efd3deebc609c9132175e02
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: LaserScanVisualizerMesh
+  - hash:
+      serializedVersion: 2
+      Hash: f5ac396f2b098b84c0d0cbf0ce2f2f1e
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient.Actionlib
+    className: UnityFibonacciActionSever
+  - hash:
+      serializedVersion: 2
+      Hash: 8a1cc88a1b93cb83cb6597e20c3e9748
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JoySubscriber
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfPlugins
+  - hash:
+      serializedVersion: 2
+      Hash: 02237aa49c2beff594b12656405dd77d
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: RosConnector
+  - hash:
+      serializedVersion: 2
+      Hash: d965d9a4cba142a3e0d93432cea3f34f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JoyAxisInputPasser
+  - hash:
+      serializedVersion: 2
+      Hash: 4f07d984a781b6b2f93aab25595d68d7
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: PoseStampedSubscriber
+  - hash:
+      serializedVersion: 2
+      Hash: 5503f57feab25077a1e1b713b64d36fb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfJointFixed
+  - hash:
+      serializedVersion: 2
+      Hash: dce761e73f3059c170256a3093bb0682
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JoyAxisJointMotorWriter
+  - hash:
+      serializedVersion: 2
+      Hash: 4744fae82304fe339d6ea1778621170e
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JointStatePublisher
+  - hash:
+      serializedVersion: 2
+      Hash: 40c9359758686abcd0b6fd7064d6581c
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: ImagePublisher
+  - hash:
+      serializedVersion: 2
+      Hash: 2327f9f13a5fb7893b784a290514a506
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JointStateSubscriber
+  - hash:
+      serializedVersion: 2
+      Hash: 941515e33a55f1308788e79ef3be405c
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: LaserScanReader
+  - hash:
+      serializedVersion: 2
+      Hash: 5503f57feab25077a1e1b713b64d36fb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfJointContinuous
+  - hash:
+      serializedVersion: 2
+      Hash: 71023ea1efc469c53dbfb0d52f1e5c1e
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfInertial
+  - hash:
+      serializedVersion: 2
+      Hash: c88c4199b288356ec3eb2f0d85abc619
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JoyButtonReader
+  - hash:
+      serializedVersion: 2
+      Hash: 5503f57feab25077a1e1b713b64d36fb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfJointPlanar
+  - hash:
+      serializedVersion: 2
+      Hash: 5503f57feab25077a1e1b713b64d36fb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.Urdf
+    className: UrdfJointFloating
+  - hash:
+      serializedVersion: 2
+      Hash: c88c4199b288356ec3eb2f0d85abc619
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JoyAxisReader
+  - hash:
+      serializedVersion: 2
+      Hash: 9d30893e969eb98f3869d71be6b8a9d4
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: TwistPublisher
+  - hash:
+      serializedVersion: 2
+      Hash: 256bee10772d5b5129dfbb23f40d72a1
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp
+    className: PrismaticJointLimitsManager
+  - hash:
+      serializedVersion: 2
+      Hash: fb3b94f234641c0f044c4ae26a455808
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: RosSharp.RosBridgeClient
+    className: JoyPublisher
   platform: 13
   scenePathNames:
   - Assets/Scenes/RobotScene.unity
