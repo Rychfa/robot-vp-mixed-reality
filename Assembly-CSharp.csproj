@@ -119,9 +119,8 @@
      <Compile Include="Assets\RosSharp\Scripts\Urdf\UrdfComponents\UrdfVisual.cs" />
      <Compile Include="Assets\RosSharp\Scripts\Urdf\UrdfComponents\UrdfVisuals.cs" />
      <Compile Include="Assets\Scripts\ButtonsHandler.cs" />
-     <Compile Include="Assets\Scripts\CameraManager.cs" />
+     <Compile Include="Assets\Scripts\KinematicProblem.cs" />
      <Compile Include="Assets\Scripts\KinematicsSolver.cs" />
-     <Compile Include="Assets\Scripts\MoveElfin.cs" />
      <Compile Include="Assets\Scripts\PlacementController.cs" />
      <Compile Include="Assets\Scripts\RobotJoint.cs" />
      <None Include="Assets\Urdf\Elfin\elfin_description\CMakeLists.txt" />

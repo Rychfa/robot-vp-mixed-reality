@@ -1,27 +1,31 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class ButtonsHandler : MonoBehaviour
 {
-    // public GameObject robot;
-    // private Button _resetButton;
-
-    // private void Awake()
-    // {
-    //     // _resetButton = GameObject.Find("Reset Button").GetComponent<Button>();
-    //     // _resetButton.GetComponentInChildren<Text>().text = "la di da";
-    //     // _resetButton.transform.position = new Vector3(0.1f, 0.1f);
-    //     // var resetRect = _resetButton.GetComponent<RectTransform>();
-    //     // resetRect.rect = 
-    // }
-
     public void ClearRobot()
     {
         if (PlacementController.spawnedRobot != null)
         {
             Destroy(PlacementController.spawnedRobot);
         }
-            
+    }
+
+    public void SetMode1()
+    {
+        PlacementController.mode1 = true;
+    }
+
+    public void SetMode2()
+    {
+        PlacementController.mode1 = false;
+    }
+
+    public void setPositiveRotation()
+    {
+        PlacementController.sign = 1.0f;
+    }
+    public void setNegativeRotation()
+    {
+        PlacementController.sign = -1.0f;
     }
 }

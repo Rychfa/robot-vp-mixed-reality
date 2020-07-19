@@ -8,6 +8,8 @@ public class RobotJoint : MonoBehaviour
 
     void Awake ()
     {
-        StartOffset = transform.localPosition;
+        // transform.position - transform.parent.position;
+        StartOffset = transform.position - transform.parent.position; //new Vector3(-transform.localPosition.z, -transform.localPosition.x, -transform.localPosition.y);
+        // Debug.Log(transform.name + ": " + transform.position + ", " + StartOffset);
     }
 }

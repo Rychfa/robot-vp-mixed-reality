@@ -1,7 +1,14 @@
 # Ignore builds if any
-**/Build
-**/Export
-*.apk
+#**/Build
+#**/Export
+#*.apk
+
+# Ignore unecessary folders
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
 
 # Ignore Temp
 **/Temp

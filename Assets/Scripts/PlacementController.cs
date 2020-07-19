@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using RosSharp;
+using System.Linq;
+using System.Threading;
 using RosSharp.RosBridgeClient;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -16,9 +17,18 @@ public class PlacementController : MonoBehaviour
     private ARRaycastManager _arRaycastManager; // cast a ray to detect surfaces etc
     private Camera _camera;
 
+    private KinematicProblem _kinematicProblem;
+
     [SerializeField] [Tooltip("Instantiates this prefab on a plane at the touch location.")]
     GameObject m_PlacedPrefab;
 
+    [SerializeField] [Tooltip("Instantiates this prefab on a plane at the touch location.")]
+    GameObject m_PositionPrefab;
+
+    public static bool mode1 = false;
+
+    public static float sign = 1.0f;
+    
     /// <summary>
     /// The prefab to instantiate on touch.
     /// </summary>
@@ -28,18 +38,26 @@ public class PlacementController : MonoBehaviour
         set { m_PlacedPrefab = value; }
     }
 
+    public GameObject positionPrefab
+    {
+        get { return m_PositionPrefab; }
+        set { m_PositionPrefab = value; }
+    }
+
     /// <summary>
     /// The object instantiated as a result of a successful raycast intersection with a plane.
     /// </summary>
     public static GameObject spawnedRobot { get; set; }
 
+    private static GameObject _positionMarker;
+
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
 
     private bool stop = false;
-    private bool _kinnematicsSolverFinished = true;
-    private bool _robotMovedFinished = true;
+    private static bool _kinnematicsSolverFinished = true;
+    private static bool _robotMovedFinished = true;
     private KinematicsSolver _kinematicsSolver;
-    private float[] _jointAngles;
+    private static float[] _jointAngles;
 
 
     private void Awake()
@@ -55,7 +73,6 @@ public class PlacementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // screenLogger.text = "Is robot null: " + (spawnedRobot == null) + "\n";
         if (spawnedRobot == null)
         {
             placementCursor.SetActive(true);
@@ -65,9 +82,27 @@ public class PlacementController : MonoBehaviour
         {
             if (!stop)
             {
-                interactWithLoadedRobot();
+                if (mode1)
+                {
+                    interactWithLoadedRobot();
+                }
+                else
+                {
+                    interactWithLoadedRobot2();
+                }
+                
             }
         }
+    }
+
+    private bool IsPointerOverUIObject()
+    {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        var touch = Input.GetTouch(0);
+        eventDataCurrentPosition.position = new Vector2(touch.position.x, touch.position.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
     }
 
     private IEnumerator waitSeconds(float seconds)
@@ -78,118 +113,158 @@ public class PlacementController : MonoBehaviour
     }
 
 
-    private IEnumerator SolveInverseKinematics(Vector3 targetPosition, float[] jointAngles)
+    public static void solveKinematics(object parameter)
     {
-        _kinnematicsSolverFinished = false;
-        screenLogger.text = "Solving ... \n";
-        _kinematicsSolver.InverseKinematics(targetPosition, jointAngles);
-        screenLogger.text += "Done s ! ";
-        printArray(jointAngles);
-        // screenLogger.text += "Moving ... ";
-        // MoveRobot(targetPosition, jointAngles);
-        // StartCoroutine(MoveRobot(targetPosition, jointAngles));
-        // screenLogger.text += "Done m ! \n";
-        // StartCoroutine(MoveRobot(targetPosition, jointAngles));
-        // _robotMovedFinished = false;
+        var kinematicProblem = (KinematicProblem) parameter;
+        KinematicsSolver.InverseKinematics(kinematicProblem);
+        _jointAngles = kinematicProblem.angles;
+
         _kinnematicsSolverFinished = true;
         _robotMovedFinished = false;
-        yield return null;
     }
 
-    private IEnumerator MoveRobot2(Vector3 targetPosition, float[] jointAngles)
-    {
-        var robotJoint = _kinematicsSolver.Joints[4];
-        var targetAngle = jointAngles[4] * robotJoint.Axis;
-        var currentJointAngle = Vector3.Scale(robotJoint.transform.rotation.eulerAngles, robotJoint.Axis);
-
-        var jointWriter = robotJoint.transform.GetComponentInParent<JoyAxisJointTransformWriter>();
-        while (Vector3.Distance(targetAngle, currentJointAngle) > 0.05f)
-        {
-            var tangle = Vector3.Dot(Vector3.one, targetAngle);
-            var cangle = Vector3.Dot(Vector3.one, currentJointAngle);
-            var sign = (tangle > cangle) ? -1 : 1;
-            jointWriter.Write(sign * 1f);
-        }
-
-        yield return null;
-    }
-
-    private void MoveRobot(float[] jointAngles)
+    private void SolveInverseKinematics(Vector3 targetPosition)
     {
         var robotJoints = _kinematicsSolver.Joints;
-        int jointSuccess = 0;
-        for (int i = 0; i < robotJoints.Length; i++)
-        {
-            var robotJoint = robotJoints[i];
-            var targetAngle = jointAngles[i] * robotJoint.Axis;
-            var currentJointAngle = Vector3.Scale(robotJoint.transform.rotation.eulerAngles, robotJoint.Axis);
-            var angleDistance = Vector3.Distance(targetAngle, currentJointAngle);
-            
-            if (angleDistance > 0.05f)
-            {
-                var jointWriter = robotJoint.transform.GetComponentInParent<JoyAxisJointTransformWriter>();
-                var tangle = Vector3.Dot(robotJoint.Axis, targetAngle);
-                var cangle = Vector3.Dot(robotJoint.Axis, currentJointAngle);
-                var sign = (tangle > cangle) ? -1 : 1;
-                jointWriter.Write(sign * 1f);
-            }
-            else
-            {
-                ++jointSuccess;
-            }
+        var jointOffsets = robotJoints.Select(x => x.StartOffset).ToArray();
+        var jointAxis = robotJoints.Select(x => x.Axis).ToArray();
 
-            if (jointSuccess == robotJoints.Length)
-            {
-                _robotMovedFinished = true;
-            }
+        float[] jointAngles = new float[_kinematicsSolver.Joints.Length];
 
-        }
-        
-
-
-        // screenLogger.text = "Moving ...\n ";
-        // screenLogger.text += "target angle: " + targetAngle.ToString() + 
-        //                      "\ncurrent angle: " + currentJointAngle.ToString() + "\n";
-        // screenLogger.text += "dist: " + angleDistance;
+        _kinematicProblem = new KinematicProblem(robotJoints[0].transform.position,
+            jointOffsets, jointAxis, targetPosition, jointAngles);
+        _kinnematicsSolverFinished = false;
+        Thread kinematicThread = new Thread(solveKinematics);
+        kinematicThread.Start(_kinematicProblem);
     }
 
+    private void interactWithLoadedRobot2()
+    {
+        if (Input.touchCount > 0)
+        {
+            // If clicking on one of UI element, no raycast or robot interaction possible
+            if (IsPointerOverUIObject())
+            {
+                return;
+            }
 
+            var worldPoint =
+                _camera.ScreenToWorldPoint(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y));
+            screenLogger.text = " 3d x: " + worldPoint.x + " y: " + worldPoint.y + " z:" + worldPoint.z + " \n";
+
+            RaycastHit hit;
+            var screenPoint = Input.GetTouch(0).position;
+            var ray = _camera.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y));
+            if (Physics.Raycast(ray, out hit))
+            {
+                var trans = hit.transform.GetComponent<JoyAxisJointTransformWriter>();
+            
+                if (trans == null)
+                {
+                    screenLogger.text = hit.transform.name + " Detected but not yet ready \n";
+                    return;
+                }
+            
+                screenLogger.text = "Moving: " + hit.transform.name + "\n";
+                trans.Write(sign * 4.0f);
+            }
+        }
+    }
+    
     private void interactWithLoadedRobot()
     {
-        // if (!(Input.touchCount > 0))
-        //     return;
-
         if (Input.touchCount > 0)
-        {            
-            UpdateJointsToPosition(new Vector3(0f, 0.5f, 0.5f));
+        {
+            // If clicking on one of UI element, no raycast or robot interaction possible
+            if (IsPointerOverUIObject())
+            {
+                return;
+            }
+
+            var screenTouchPosition = new Vector2(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y);
+
+            if (!_arRaycastManager.Raycast(screenTouchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
+                return;
+
+            var hitPose = s_Hits[0].pose;
+
+            _positionMarker = Instantiate(positionPrefab, hitPose.position, Quaternion.identity);
+
+            StartCoroutine(waitSeconds(1.0f));
+
+            UpdateJointsToPosition(hitPose.position);
         }
 
         if (!_robotMovedFinished)
         {
-            MoveRobot(_jointAngles);
+            var robotJoints = _kinematicsSolver.Joints;
+            int numberOfMovableJoint = robotJoints.Length - 2;
+            
+            var jointOffsets = robotJoints.Select(x => x.StartOffset).ToArray();
+            var jointAxis = new Vector3[]
+            {
+                new Vector3(1, 0, 0),
+                new Vector3(0, 0, 1),
+                new Vector3(0, 0, 1),
+                new Vector3(1, 0, 0),
+                new Vector3(0, 0, 1),
+                new Vector3(1, 0, 0),
+                new Vector3(0, 0, 0)
+            };
+
+            float[] jointAngles = new float[_kinematicsSolver.Joints.Length];
+
+            var pb = new KinematicProblem(robotJoints[0].transform.position,
+                jointOffsets, jointAxis, _kinematicProblem.targetPosition, jointAngles);
+            
+            Vector3 point = KinematicsSolver.ForwardKinematics(pb);
+            
+            screenLogger.text = "Target: " + _kinematicProblem.targetPosition.ToString() + "\n";
+            screenLogger.text += "Curr: " + point.ToString() + "\n";
+            
+            var distanceFromTarget = KinematicsSolver.DistanceFromTarget(pb);
+            screenLogger.text += "Dist: " + distanceFromTarget + "\n";
+
+            Dictionary<int, Vector3> _jointEditorAxis = new Dictionary<int, Vector3>(numberOfMovableJoint);
+            _jointEditorAxis.Add(0, new Vector3(1, 0, 0));
+            _jointEditorAxis.Add(1, new Vector3(0, 0, 1));
+            _jointEditorAxis.Add(2, new Vector3(0, 0, 1));
+            _jointEditorAxis.Add(3, new Vector3(1, 0, 0));
+            _jointEditorAxis.Add(4, new Vector3(0, 0, 1));
+            
+            printArray(_jointAngles);
+            
+            float[] currAngles = new float[numberOfMovableJoint];
+
+            for (int i = 0; i < numberOfMovableJoint; i++)
+            {
+                robotJoints[i].transform.rotation.ToAngleAxis(out float angle, out Vector3 axis);
+                currAngles[i] = angle;
+                var angleIncrement = _jointAngles[i] - angle;
+                robotJoints[i].transform.Rotate(_jointEditorAxis[i], _jointAngles[i]);
+            }
+            
+            printArray(currAngles);
+
+            float[] updatedAngles = new float[numberOfMovableJoint];
+            for (int i = 0; i < numberOfMovableJoint; i++)
+            {
+                robotJoints[i].transform.rotation.ToAngleAxis(out float angle, out Vector3 axis);
+                updatedAngles[i] = angle;
+            }
+
+            pb = new KinematicProblem(robotJoints[0].transform.position,
+                jointOffsets, jointAxis, _kinematicProblem.targetPosition, jointAngles);
+            
+            point = KinematicsSolver.ForwardKinematics(pb);
+            
+            printArray(updatedAngles);
+
+            screenLogger.text += "Updated pos: " + point.ToString() + "\n";
+
+            _robotMovedFinished = true;
+            Destroy(_positionMarker);
         }
-
-        // var worldPoint =
-        //     _camera.ScreenToWorldPoint(new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y));
-        // screenLogger.text = " 3d x: " + worldPoint.x + " y: " + worldPoint.y + " z:" + worldPoint.z + " \n";
-
-        // RaycastHit hit;
-        // var screenPoint = Input.GetTouch(0).position;
-        // var ray = _camera.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y));
-        // if (Physics.Raycast(ray, out hit))
-        // {
-        //     // screenLogger.text = "Touched something ! " + hit.transform.name + " \n";
-        //     var trans = hit.transform.GetComponent<JoyAxisJointTransformWriter>();
-        //
-        //     if (trans == null)
-        //     {
-        //         screenLogger.text = hit.transform.name + " Detected but not yet ready \n";
-        //         return;
-        //     }
-        //
-        //     screenLogger.text = "Moving: " + hit.transform.name + "\n";
-        //     trans.Write(4.0f);
-        // }
     }
 
     private void UpdatePlacementPose()
@@ -210,107 +285,48 @@ public class PlacementController : MonoBehaviour
         if (!(Input.touchCount > 0))
             return;
 
+
+        // If clicking on one of UI element, no raycast or robot interaction possible
+        if (IsPointerOverUIObject())
+        {
+            return;
+        }
+
         spawnedRobot = Instantiate(m_PlacedPrefab, hitPose.position, rotation);
         _kinematicsSolver = spawnedRobot.GetComponentInChildren<KinematicsSolver>();
 
         var joints = _kinematicsSolver.Joints;
         // _jointAngles = new float[joints.Length];
 
-        screenLogger.text = "orig j1:" + joints[0].transform.position.ToString("F4") + ", " +
-                            joints[0].StartOffset.ToString("F4") + "\n";
-        screenLogger.text += "orig j2:" + joints[1].transform.position.ToString("F4") + ", " +
-                             joints[1].StartOffset.ToString("F4") + "\n";
-
-
-        // FIXME: the text in the "monitoring console" is not rendered when no more space.
-        // screenLogger.text += "Robot placed ! Position: " + hitPose.ToString() + "\n";
+        screenLogger.text = "robot pos:" + spawnedRobot.transform.position.ToString() + "\n";
+        
         placementCursor.SetActive(false);
 
-
-        // TODO: When robot is placed, look for all desired GameObject and components, so that it can be moved etc
-
         StartCoroutine(waitSeconds(1.0f));
-        // Input.touchCount = 0;
     }
 
 
     private void UpdateJointsToPosition(Vector3 targetPosition)
     {
-        // StartCoroutine(SolveInverseKinematics(targetPosition, jointAngles));
-
-        // _kinematicsSolver.InverseKinematics(targetPosition, jointAngles);
-        //
-        // screenLogger.text = "angles: ";
-        // printArray(jointAngles);
-
-
         if (_kinnematicsSolverFinished && _robotMovedFinished)
         {
-            _jointAngles = new float[_kinematicsSolver.Joints.Length];
-            StartCoroutine(SolveInverseKinematics(targetPosition, _jointAngles));
-            // float[] jointAngles = {0f, 0f, 0f, 0f, 0f, 0f, 0f};
-
-            // if (_robotMovedFinished)
-            // {
-            //     _jointAngles = new float[_kinematicsSolver.Joints.Length];
-            //     StartCoroutine(SolveInverseKinematics(targetPosition, _jointAngles));
-            // }
-            //
-            // if (_robotMovedFinished)
-            // {
-            //     StartCoroutine(SolveInverseKinematics(targetPosition, jointAngles));
-            // }
-            // else
-            // {
-            //     MoveRobot(targetPosition, jointAngles);
-            // }
-
-            // var robotJoint5 = _kinematicsSolver.Joints[4];
-            // robotJoint5.transform.RotateAround(robotJoint5.transform.position, robotJoint5.Axis, 45f);
+            screenLogger.text = "New pos: " + targetPosition.ToString() + "... \n";
+            SolveInverseKinematics(targetPosition);
         }
-
-        // for (int i = 0; i < _kinematicsSolver.Joints.Length; i++)
-        // {
-        // _kinematicsSolver.Joints[i].transform.RotateAround(
-        //     _kinematicsSolver.Joints[i].transform.position, _kinematicsSolver.Joints[i].Axis, jointAngles[i]);
-
-        // var jointWriter = _kinematicsSolver.Joints[i].transform.GetComponentInParent<JoyAxisJointTransformWriter>();
-        //
-        // var jointAnglePerAxis = Vector3.Scale(
-        //     _kinematicsSolver.Joints[i].transform.rotation.eulerAngles, _kinematicsSolver.Joints[i].Axis);
-        //
-        // var targetAngle = jointAngles[i] * _kinematicsSolver.Joints[i].Axis;
-        //
-        // var step = 0;
-        // var maxSteps = 100;
-        //
-        // while (step < maxSteps && Vector3.Distance(jointAnglePerAxis, targetAngle) > 0.1)
-        // {
-        //     jointWriter.Write(5f);
-        //     ++step;
-        // }
-
-        // jointAnglePerAxis = Vector3.Scale(
-        //     _kinematicsSolver.Joints[i].transform.rotation.eulerAngles, _kinematicsSolver.Joints[i].Axis);
-        //
-        // // Debug.Log("Angle " + i + " = " + jointAnglePerAxis.ToString("F4"));
-        // }
     }
-
-
+    
     private void printArray(float[] arr)
     {
         var ja = "";
         for (int i = 0; i < arr.Length; i++)
         {
-            ja += arr[i].ToString("F4");
-            if (i < arr.Length - 1)
+            ja += arr[i].ToString("F2");
+            if (i < arr.Length - 3)
             {
                 ja += ", ";
             }
         }
 
         screenLogger.text += ja + "\n";
-        // Debug.Log(ja);
     }
 }
