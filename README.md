@@ -1,6 +1,6 @@
 # Visual programming of a simulated industrial robot arm in mixed reality using android phone.
 
-The project source files can be found here: https://gitlab.ethz.ch/rcherif/visualprog along with an apk file which can be found under Build/Android and a demo video at the root folder of the project.
+The project source files can be found here along with an apk file which can be found under Build/Android and a demo video at the root folder of the project.
 
 ### Assets folder:
 It contains the following core folders:
